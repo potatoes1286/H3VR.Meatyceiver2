@@ -7,10 +7,10 @@ using UnityEngine;
 using BepInEx.Harmony;
 using BepInEx;
 using BepInEx.Configuration;
-//Potatoes, why the actual fuck is this all in one file
+
 namespace Meatyceiver2
 {
-	[BepInPlugin("dll.potatoes.meatyceiver2", "Meatyceiver2", "0.2.4")]
+	[BepInPlugin("dll.potatoes.meatyceiver2", "Meatyceiver2", "0.2.5")]
 	public class Meatyceiver : BaseUnityPlugin
 	{
 		private static ConfigEntry<bool> enableFirearmFailures;
@@ -28,20 +28,19 @@ namespace Meatyceiver2
 
 
 		private static ConfigEntry<float> lightPrimerStrikeFailureRate;
-		private static ConfigEntry<float> hangFireRate;
+		private static ConfigEntry<float> HangFireRate;
 
 		private static ConfigEntry<float> failureToFeedRate;
-		private static ConfigEntry<float> failureToExtractRate;
-		private static ConfigEntry<float> doubleFeedRate;
-		private static ConfigEntry<float> stovepipeRate;
+		private static ConfigEntry<float> FailureToExtractRate;
+		private static ConfigEntry<float> DoubleFeedRate;
+		private static ConfigEntry<float> StovepipeRate;
 
-		private static ConfigEntry<float> hammerFollowRate;
+		private static ConfigEntry<float> HammerFollowRate;
 		private static ConfigEntry<float> failureToLockSlide;
-		private static ConfigEntry<float> slamfireRate;
+		private static ConfigEntry<float> SlamfireRate;
 
-		private static ConfigEntry<float> bespokeFailureBreakActionShotgunFTE;
-
-		public static float prevSlideZLock = -999f;
+		private static ConfigEntry<float> BespokeFailureBreakActionShotgunFTE;
+		private static ConfigEntry<float> BespokeFailureBreakActionShotgunFTEGenMultAffect;
 
 		public static System.Random rnd;
 
@@ -61,21 +60,49 @@ namespace Meatyceiver2
 			//			pistolMult = Config.Bind("_Multipliers", "Pistol Failure Multiplier", 1f, "Pistols are higher than others because they are semi.");
 
 			lightPrimerStrikeFailureRate = Config.Bind("Failures - Ammo", "Light Primer Strike Failure Rate", 0.25f, "Valid numbers are 0-100");
-			hangFireRate = Config.Bind("Failures - Ammo", "Hang Fire Rate", 0.1f, "Valid numbers are 0-100");
+			HangFireRate = Config.Bind("Failures - Ammo", "Hang Fire Rate", 0.1f, "Valid numbers are 0-100");
 
 			failureToFeedRate = Config.Bind("Failures - Firearm", "Failure to Feed Rate", 0.25f, "Valid numbers are 0-100");
-			failureToExtractRate = Config.Bind("Failures - Firearm", "Failure to Eject Rate", 0.15f, "Valid numbers are 0-100");
-			doubleFeedRate = Config.Bind("Failures - Firearm", "Double Feed Rate", 0.15f, "Valid numbers are 0-100");
-			stovepipeRate = Config.Bind("Failures - Firearm", "Stovepipe Rate", 0.1f, "Valid numbers are 0-100");
+			FailureToExtractRate = Config.Bind("Failures - Firearm", "Failure to Eject Rate", 0.15f, "Valid numbers are 0-100");
+			DoubleFeedRate = Config.Bind("Failures - Firearm", "Double Feed Rate", 0.15f, "Valid numbers are 0-100");
+			StovepipeRate = Config.Bind("Failures - Firearm", "Stovepipe Rate", 0.1f, "Valid numbers are 0-100");
 
-			hammerFollowRate = Config.Bind("Failures - Broken Firearm", "Hammer Follow Rate", 0.05f, "Valid numbers are 0-100");
+			HammerFollowRate = Config.Bind("Failures - Broken Firearm", "Hammer Follow Rate", 0.05f, "Valid numbers are 0-100");
 			failureToLockSlide = Config.Bind("Failures - Broken Firearm", "Failure to Lock Slide Rate", 0.3f, "Valid numbers are 0-100");
-			slamfireRate = Config.Bind("Failures - Broken Firearm", "Slam Fire Rate", 0.05f, "Valid numbers are 0-100");
+			SlamfireRate = Config.Bind("Failures - Broken Firearm", "Slam Fire Rate", 0.05f, "Valid numbers are 0-100");
 
-			bespokeFailureBreakActionShotgunFTE = Config.Bind("Failures - Bespoke", "Break Action Failure To Eject", 1.5f, "Valid numbers are 0-100");
+			BespokeFailureBreakActionShotgunFTE = Config.Bind("Failures - Bespoke", "Break Action Failure To Eject", 10f, "Valid numbers are 0-100. By default, GenMult applies to this 50%.");
+			BespokeFailureBreakActionShotgunFTEGenMultAffect = Config.Bind("Failures - Bespoke", "Break Action Failure To Eject General Multiplier Affect", 0.5f, "General Multiplier is multiplied by this before affecting BA FTE.");
+
 			Harmony.CreateAndPatchAll(typeof(Meatyceiver));
 			rnd = new System.Random();
 		}
+
+
+		public static void consoleDebugging(short responseType, string _failName, float _rand, float _percentChance)
+		{
+			if (!enableConsoleDebugging.Value) return;
+			switch (responseType)
+			{
+				case 0:
+					Debug.Log(_failName + " RNG: " + _rand + " to " + _percentChance);
+					break;
+				case 1:
+					Debug.Log(_failName + " failure!");
+					break;
+			}
+		}
+
+
+
+
+
+
+
+
+
+
+
 
 		//BEGIN AMMO FAILURES
 
@@ -83,11 +110,14 @@ namespace Meatyceiver2
 		[HarmonyPrefix]
 		static bool LightPrimerStrikePatch(ref bool __result, FVRFireArmChamber __instance, FVRFireArmRound ___m_round)
 		{
-			if (!enableAmmunitionFailures.Value) { return true; }
-			if (__instance.Firearm is Revolver || __instance.Firearm is RevolvingShotgun) { return true; }
-			var rand = (float)rnd.Next(0, 10001) / 100;
-			if (enableConsoleDebugging.Value) { Debug.Log("LPS RNG: " + rand + " to " + lightPrimerStrikeFailureRate.Value * generalMult.Value); }
-			if (rand >= lightPrimerStrikeFailureRate.Value * generalMult.Value)
+			string failureName = "LPS";
+			if (!enableAmmunitionFailures.Value) return true;
+			if (__instance.Firearm is Revolver || __instance.Firearm is RevolvingShotgun) return true;
+			float rand = (float)rnd.Next(0, 10001) / 100;
+			float chance = lightPrimerStrikeFailureRate.Value * generalMult.Value;
+			consoleDebugging(0, failureName, rand, chance);
+			//			if (enableConsoleDebugging.Value) { Debug.Log("LPS RNG: " + rand + " to " + lightPrimerStrikeFailureRate.Value * generalMult.Value); }
+			if (rand >= chance)
 			{
 				if (__instance.IsFull && ___m_round != null && !__instance.IsSpent)
 				{
@@ -99,7 +129,7 @@ namespace Meatyceiver2
 			}
 			else
 			{
-				if (enableConsoleDebugging.Value) { Debug.Log("Light primer strike!"); };
+				consoleDebugging(1, failureName, rand, chance);
 			}
 			__result = false;
 			return false;
@@ -109,12 +139,14 @@ namespace Meatyceiver2
 		[HarmonyPrefix]
 		static bool LightPrimerStrikeRevolverPatch(Revolver __instance)
 		{
+			string failureName = "LPS";
 			if (!enableAmmunitionFailures.Value) { return true; }
-			var rand = (float)rnd.Next(0, 10001) / 100;
-			if (enableConsoleDebugging.Value) { Debug.Log("LPS RNG: " + rand + " to " + lightPrimerStrikeFailureRate.Value * generalMult.Value); }
+			float rand = (float)rnd.Next(0, 10001) / 100;
+			float chance = lightPrimerStrikeFailureRate.Value * generalMult.Value;
+			consoleDebugging(0, failureName, rand, chance);
 			if (rand <= lightPrimerStrikeFailureRate.Value * generalMult.Value)
 			{
-				if (enableConsoleDebugging.Value) { Debug.Log("Light primer strike!"); };
+				consoleDebugging(1, failureName, rand, chance);
 				__instance.Chambers[__instance.CurChamber].IsSpent = false;
 				__instance.Chambers[__instance.CurChamber].UpdateProxyDisplay();
 				return false;
@@ -126,12 +158,14 @@ namespace Meatyceiver2
 		[HarmonyPrefix]
 		static bool LightPrimerStrikeRevolvingShotgunPatch(RevolvingShotgun __instance)
 		{
+			string failureName = "LPS";
 			if (!enableAmmunitionFailures.Value) { return true; }
-			var rand = (float)rnd.Next(0, 10001) / 100;
-			if (enableConsoleDebugging.Value) { Debug.Log("LPS RNG: " + rand + " to " + lightPrimerStrikeFailureRate.Value * generalMult.Value); }
+			float rand = (float)rnd.Next(0, 10001) / 100;
+			float chance = lightPrimerStrikeFailureRate.Value * generalMult.Value;
+			consoleDebugging(0, failureName, rand, chance);
 			if (rand <= lightPrimerStrikeFailureRate.Value * generalMult.Value)
 			{
-				if (enableConsoleDebugging.Value) { Debug.Log("Light primer strike!"); };
+				consoleDebugging(1, failureName, rand, chance);
 				__instance.Chambers[__instance.CurChamber].IsSpent = false;
 				__instance.Chambers[__instance.CurChamber].UpdateProxyDisplay();
 				return false;
@@ -148,6 +182,7 @@ namespace Meatyceiver2
 		[HarmonyPrefix]
 		static bool FTFPatch(FVRFireArm __instance)
 		{
+			string failureName = "FTF";
 			float failureinc = 0;
 			if (!enableFirearmFailures.Value) { return true; }
 			var rand = (float)rnd.Next(0, 10001) / 100;
@@ -158,10 +193,11 @@ namespace Meatyceiver2
 					failureinc = (float)(__instance.Magazine.m_capacity - minRoundCount.Value) * failureIncPerRound.Value;
 				}
 			}
-			if (enableConsoleDebugging.Value) { Debug.Log("FTF RNG: " + rand + " to " + (hammerFollowRate.Value + failureinc) * generalMult.Value); };
-			if (rand <= (failureToFeedRate.Value + failureinc) * generalMult.Value)
+			float chance = (HammerFollowRate.Value + failureinc) * generalMult.Value;
+			consoleDebugging(0, failureName, rand, chance);
+			if (rand <= chance)
 			{
-				if (enableConsoleDebugging.Value) { Debug.Log("Failure to feed!"); };
+				consoleDebugging(1, failureName, rand, chance);
 				return false;
 			}
 			return true;
@@ -171,13 +207,15 @@ namespace Meatyceiver2
 		[HarmonyPrefix]
 		static bool FailtoPopEmptyBreakActionPatch(BreakActionWeapon __instance, FVRFireArm chamber)
 		{
-			if (!enableFirearmFailures.Value) { return true; }
-			if (chamber.RotationInterpSpeed == 2) { return false; };
-			var rand = (float)rnd.Next(0, 10001) / 100;
-			if (enableConsoleDebugging.Value) { Debug.Log("FTE RNG: " + rand + " to " + bespokeFailureBreakActionShotgunFTE.Value * generalMult.Value); }
-			if (rand <= bespokeFailureBreakActionShotgunFTE.Value * generalMult.Value)
+			string failureName = "BA FTE";
+			if (!enableFirearmFailures.Value) return true;
+			if (chamber.RotationInterpSpeed == 2) return false;
+			float rand = (float)rnd.Next(0, 10001) / 100;
+			float chance = BespokeFailureBreakActionShotgunFTE.Value * (generalMult.Value * BespokeFailureBreakActionShotgunFTEGenMultAffect.Value);
+			consoleDebugging(0, failureName, rand, chance);
+			if (rand <= chance)
 			{
-				if (enableConsoleDebugging.Value) { Debug.Log("Failure to eject!"); }
+				consoleDebugging(1, failureName, rand, chance);
 				chamber.RotationInterpSpeed = 2;
 				return false;
 			}
@@ -210,21 +248,26 @@ namespace Meatyceiver2
 		[HarmonyPrefix]
 		static bool FTEPatch(FVRInteractiveObject __instance)
 		{
+			string FTEfailureName = "FTE";
+			string StovePipeFailureName = "Stovepipe";
 			if (__instance is BoltActionRifle) { return false; }
 			if (__instance is LeverActionFirearm) { return false; }
 			if (!enableFirearmFailures.Value) { return true; }
-			var rand = (float)rnd.Next(0, 10001) / 100;
-			if (enableConsoleDebugging.Value) { Debug.Log("Stovepipe RNG: " + rand + " to " + stovepipeRate.Value * generalMult.Value); }
-			if (rand >= 100 - stovepipeRate.Value * generalMult.Value)
+			float rand = (float)rnd.Next(0, 10001) / 100;
+			float chance = StovepipeRate.Value * generalMult.Value;
+			consoleDebugging(0, StovePipeFailureName, rand, chance);
+			if (rand <= 100 - StovepipeRate.Value * generalMult.Value)
 			{
-				if (enableConsoleDebugging.Value) { Debug.Log("Stovepipe!"); }
+				consoleDebugging(1, StovePipeFailureName, rand, chance);
 				__instance.RotationInterpSpeed = 2;
 				return false;
 			}
-			if (enableConsoleDebugging.Value) { Debug.Log("FTE RNG: " + rand + " to " + failureToExtractRate.Value * generalMult.Value); }
-			if (rand <= failureToExtractRate.Value * generalMult.Value)
+			rand = (float)rnd.Next(0, 10001) / 100;
+			chance = StovepipeRate.Value * generalMult.Value;
+			consoleDebugging(0, FTEfailureName, rand, chance);
+			if (rand <= FailureToExtractRate.Value * generalMult.Value)
 			{
-				if (enableConsoleDebugging.Value) { Debug.Log("Failure to eject!"); }
+				consoleDebugging(1, FTEfailureName, rand, chance);
 				return false;
 			}
 			return true;
@@ -283,11 +326,13 @@ namespace Meatyceiver2
 		{
 			if (enableBrokenFirearmFailures.Value)
 			{
-				var rand = (float)rnd.Next(0, 10001) / 100;
-				if (enableConsoleDebugging.Value) { Debug.Log("Slam fire RNG: " + rand + " to " + slamfireRate.Value * generalMult.Value); };
-				if (rand <= slamfireRate.Value * generalMult.Value)
+				string failureName = "Slam fire";
+				float rand = (float)rnd.Next(0, 10001) / 100;
+				float chance = SlamfireRate.Value * generalMult.Value;
+				consoleDebugging(0, failureName, rand, chance);
+				if (rand <= chance)
 				{
-					if (enableConsoleDebugging.Value) { Debug.Log("Slam fire!"); };
+					consoleDebugging(1, failureName, rand, chance);
 					__instance.Handgun.DropHammer(false);
 				}
 			}
@@ -299,11 +344,13 @@ namespace Meatyceiver2
 		{
 			if (enableBrokenFirearmFailures.Value)
 			{
-				var rand = (float)rnd.Next(0, 10001) / 100;
-				if (enableConsoleDebugging.Value) { Debug.Log("Slam fire RNG: " + rand + " to " + slamfireRate.Value * generalMult.Value); };
-				if (rand <= slamfireRate.Value * generalMult.Value)
+				string failureName = "Slam fire";
+				float rand = (float)rnd.Next(0, 10001) / 100;
+				float chance = SlamfireRate.Value * generalMult.Value;
+				consoleDebugging(0, failureName, rand, chance);
+				if (rand <= chance)
 				{
-					if (enableConsoleDebugging.Value) { Debug.Log("Slam fire!"); };
+					consoleDebugging(1, failureName, rand, chance);
 					__instance.Weapon.DropHammer();
 				}
 			}
@@ -316,11 +363,13 @@ namespace Meatyceiver2
 		static bool hammerFollowClosedBoltPatch()
 		{
 			if (!enableBrokenFirearmFailures.Value) { return true; }
-			var rand = (float)rnd.Next(0, 10001) / 100;
-			if (enableConsoleDebugging.Value) { Debug.Log("Hammer Follow RNG: " + rand + " to " + hammerFollowRate.Value * generalMult.Value); };
-			if (rand <= hammerFollowRate.Value * generalMult.Value)
+			string failureName = "Hammer follow";
+			float rand = (float)rnd.Next(0, 10001) / 100;
+			float chance = HammerFollowRate.Value * generalMult.Value;
+			consoleDebugging(0, failureName, rand, chance);
+			if (rand <= chance)
 			{
-				if (enableConsoleDebugging.Value) { Debug.Log("Hammer follow!"); };
+				consoleDebugging(1, failureName, rand, chance);
 				return false;
 			}
 			return true;
@@ -331,11 +380,13 @@ namespace Meatyceiver2
 		static bool hammerFollowHandgunPatch(bool isManual)
 		{
 			if (!enableBrokenFirearmFailures.Value) { return true; }
-			var rand = (float)rnd.Next(0, 10001) / 100;
-			if (enableConsoleDebugging.Value) { Debug.Log("Hammer Follow RNG: " + rand + " to " + hammerFollowRate.Value * generalMult.Value); };
-			if (rand <= hammerFollowRate.Value * generalMult.Value && !isManual)
+			string failureName = "Hammer follow";
+			float rand = (float)rnd.Next(0, 10001) / 100;
+			float chance = HammerFollowRate.Value * generalMult.Value;
+			consoleDebugging(0, failureName, rand, chance);
+			if (rand <= chance && !isManual)
 			{
-				if (enableConsoleDebugging.Value) { Debug.Log("Hammer follow!"); };
+				consoleDebugging(1, failureName, rand, chance);
 				return false;
 			}
 			return true;

@@ -12,3 +12,12 @@ C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.csp
 C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.dll
 C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.pdb
 C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.csprojAssemblyReference.cache
+F:\GitHub\H3VR.Meatyceiver2\Meatyceiver2\bin\Debug\Meatyceiver2.dll
+F:\GitHub\H3VR.Meatyceiver2\Meatyceiver2\bin\Debug\Meatyceiver2.pdb
+F:\GitHub\H3VR.Meatyceiver2\Meatyceiver2\bin\Debug\Assembly-CSharp-firstpass.dll
+F:\GitHub\H3VR.Meatyceiver2\Meatyceiver2\bin\Debug\Mono.Cecil.dll
+F:\GitHub\H3VR.Meatyceiver2\Meatyceiver2\bin\Debug\UnityEngine.UI.dll
+F:\GitHub\H3VR.Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.csprojAssemblyReference.cache
+F:\GitHub\H3VR.Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.csproj.CopyComplete
+F:\GitHub\H3VR.Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.dll
+F:\GitHub\H3VR.Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.pdb
