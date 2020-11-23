@@ -12,3 +12,17 @@ C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.csp
 C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.dll
 C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.pdb
 C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.csprojAssemblyReference.cache
+C:\Users\Frityet\Documents\Programming\CS\H3VR Mods\H3VR.Meatyceiver2\Meatyceiver2\bin\Debug\Meatyceiver2.dll
+C:\Users\Frityet\Documents\Programming\CS\H3VR Mods\H3VR.Meatyceiver2\Meatyceiver2\bin\Debug\Meatyceiver2.pdb
+C:\Users\Frityet\Documents\Programming\CS\H3VR Mods\H3VR.Meatyceiver2\Meatyceiver2\bin\Debug\0Harmony.dll
+C:\Users\Frityet\Documents\Programming\CS\H3VR Mods\H3VR.Meatyceiver2\Meatyceiver2\bin\Debug\Assembly-CSharp.dll
+C:\Users\Frityet\Documents\Programming\CS\H3VR Mods\H3VR.Meatyceiver2\Meatyceiver2\bin\Debug\BepInEx.dll
+C:\Users\Frityet\Documents\Programming\CS\H3VR Mods\H3VR.Meatyceiver2\Meatyceiver2\bin\Debug\BepInEx.Harmony.dll
+C:\Users\Frityet\Documents\Programming\CS\H3VR Mods\H3VR.Meatyceiver2\Meatyceiver2\bin\Debug\UnityEngine.dll
+C:\Users\Frityet\Documents\Programming\CS\H3VR Mods\H3VR.Meatyceiver2\Meatyceiver2\bin\Debug\Mono.Cecil.dll
+C:\Users\Frityet\Documents\Programming\CS\H3VR Mods\H3VR.Meatyceiver2\Meatyceiver2\bin\Debug\0Harmony.xml
+C:\Users\Frityet\Documents\Programming\CS\H3VR Mods\H3VR.Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.csprojAssemblyReference.cache
+C:\Users\Frityet\Documents\Programming\CS\H3VR Mods\H3VR.Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.csproj.CoreCompileInputs.cache
+C:\Users\Frityet\Documents\Programming\CS\H3VR Mods\H3VR.Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.csproj.CopyComplete
+C:\Users\Frityet\Documents\Programming\CS\H3VR Mods\H3VR.Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.dll
+C:\Users\Frityet\Documents\Programming\CS\H3VR Mods\H3VR.Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.pdb
