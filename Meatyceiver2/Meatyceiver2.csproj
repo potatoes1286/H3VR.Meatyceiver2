@@ -35,8 +35,14 @@
     <Reference Include="0Harmony">
       <HintPath>..\..\pcgH3VRframework\pcgH3VRframework\bin\Debug\0Harmony.dll</HintPath>
     </Reference>
+    <Reference Include="0Harmony, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\..\..\Karlson\BepInEx\core\0Harmony.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>F:\GitHub\PotatoesH3VRLib\H3VRUtilities.Weapons\bin\Debug\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\H3VRUtils\Libraries\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>F:\GitHub\PotatoesH3VRLib\H3VRUtilities.Weapons\bin\Debug\Assembly-CSharp-firstpass.dll</HintPath>
@@ -44,14 +50,23 @@
     <Reference Include="BepInEx">
       <HintPath>F:\GitHub\PotatoesH3VRLib\H3VRUtilities.Weapons\bin\Debug\BepInEx.dll</HintPath>
     </Reference>
+    <Reference Include="BepInEx, Version=5.4.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\H3VRUtils\Libraries\BepInEx.dll</HintPath>
+    </Reference>
     <Reference Include="BepInEx.Harmony">
       <HintPath>F:\GitHub\PotatoesH3VRLib\H3VRUtilities.Weapons\bin\Debug\BepInEx.Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="BepInEx.Harmony, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\H3VRUtils\Libraries\BepInEx.Harmony.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="UnityEngine">
       <HintPath>F:\GitHub\PotatoesH3VRLib\H3VRUtilities.Weapons\bin\Debug\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\H3VRUtils\Libraries\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
