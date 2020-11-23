@@ -1,18 +1,16 @@
 ﻿{
   "name": "Meatyceiver 2",
-  "authors":
+  "authors": 
   [
     "Potatoes",
     "Frityet"
   ],
   "guid": "h3vr.meatyceiver.potatoes",
   "version": "1.0.0",
-  "dependencies": 
-  {
+  "dependencies": {
     "deli.core": "1.0.0.0"
   },
-  "assets":
-  {
-    "Meatyceiver2.dll" : "assembly"
+  "assets": {
+    "Meatyceiver2.dll": "assembly"
   }
 }
