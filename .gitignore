@@ -11,3 +11,9 @@ Meatyceiver2/bin/Debug/BepInEx.Harmony.dll
 .vs/Meatyceiver2/v16/Server/sqlite3/storage.ide
 .vs/Meatyceiver2/v16/Server/sqlite3/storage.ide-shm
 .vs/Meatyceiver2/v16/Server/sqlite3/storage.ide-wal
+*.dll
+.vs/Meatyceiver2/v16/.suo
+Meatyceiver2/bin/Debug/Meatyceiver2.dll
+Meatyceiver2/bin/Debug/Meatyceiver2.pdb
+Meatyceiver2/obj/Debug/Meatyceiver2.dll
+Meatyceiver2/obj/Debug/Meatyceiver2.pdb

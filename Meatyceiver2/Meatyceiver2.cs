@@ -85,7 +85,7 @@ namespace Meatyceiver2
 			switch (responseType)
 			{
 				case 0:
-					Debug.Log(_failName + " RNG: " + _rand + " to " + _percentChance);
+					Debug.Log(_failName + " RandomNum: " + _rand + " to " + _percentChance);
 					break;
 				case 1:
 					Debug.Log(_failName + " failure!");
