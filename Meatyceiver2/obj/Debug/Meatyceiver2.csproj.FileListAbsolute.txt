@@ -1,0 +1,14 @@
+C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\bin\Debug\Meatyceiver2.dll
+C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\bin\Debug\Meatyceiver2.pdb
+C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\bin\Debug\0Harmony.dll
+C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\bin\Debug\Assembly-CSharp-firstpass.dll
+C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\bin\Debug\Assembly-CSharp.dll
+C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\bin\Debug\BepInEx.dll
+C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\bin\Debug\BepInEx.Harmony.dll
+C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\bin\Debug\UnityEngine.dll
+C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\bin\Debug\Mono.Cecil.dll
+C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\bin\Debug\UnityEngine.UI.dll
+C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.csproj.CopyComplete
+C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.dll
+C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.pdb
+C:\Users\rafae\source\repos\Meatyceiver2\Meatyceiver2\obj\Debug\Meatyceiver2.csprojAssemblyReference.cache
