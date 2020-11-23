@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="1c982b28-d7d1-4f6e-972f-cc0fe36f8e37" name="Default Changelist" comment="Fixed the variables" />
+    <list default="true" id="1c982b28-d7d1-4f6e-972f-cc0fe36f8e37" name="Default Changelist" comment="Fixed the variables">
+      <change afterPath="$PROJECT_DIR$/Meatyceiver2/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Meatyceiver2/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Meatyceiver2/.idea/contentModel.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Meatyceiver2/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Meatyceiver2/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Meatyceiver2/Meatyceiver2.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Meatyceiver2/Meatyceiver2.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Meatyceiver2/obj/Debug/Meatyceiver2.csprojAssemblyReference.cache" beforeDir="false" afterPath="$PROJECT_DIR$/Meatyceiver2/obj/Debug/Meatyceiver2.csprojAssemblyReference.cache" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JSON File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -13,6 +26,7 @@
   <component name="IdeDocumentHistory">
     <changedPaths>
       <option value="$PROJECT_DIR$/Meatyceiver2/Meatyceiver2.cs" />
+      <option value="$PROJECT_DIR$/Meatyceiver2/manifest.json" />
     </changedPaths>
   </component>
   <component name="ProjectId" id="1khijC9LXJtUE4nAN3lLCq992Fq" />
@@ -56,7 +70,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1606159361064</updated>
-      <workItem from="1606159368719" duration="989000" />
+      <workItem from="1606159368719" duration="1462000" />
+      <workItem from="1606165565004" duration="333000" />
     </task>
     <task id="LOCAL-00001" summary="Fixed the variables">
       <created>1606160337064</created>
@@ -71,7 +86,7 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
-  <component name="UnityProjectConfiguration" hasMinimizedUI="null" />
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="UnityUnitTestConfiguration" currentTestLauncher="NUnit" />
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -83,6 +98,7 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
