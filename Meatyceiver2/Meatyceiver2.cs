@@ -10,7 +10,7 @@ using BepInEx.Configuration;
 
 namespace Meatyceiver2
 {
-	[BepInPlugin("dll.potatoes.meatyceiver2", "Meatyceiver2", "0.2.5")]
+	[BepInPlugin("dll.potatoes.meatyceiver2", "Meatyceiver2", "0.2.6")]
 	public class Meatyceiver : BaseUnityPlugin
 	{
 		private static ConfigEntry<bool> enableFirearmFailures;
@@ -71,7 +71,7 @@ namespace Meatyceiver2
 			failureToLockSlide = Config.Bind("Failures - Broken Firearm", "Failure to Lock Slide Rate", 0.3f, "Valid numbers are 0-100");
 			SlamfireRate = Config.Bind("Failures - Broken Firearm", "Slam Fire Rate", 0.05f, "Valid numbers are 0-100");
 
-			BespokeFailureBreakActionShotgunFTE = Config.Bind("Failures - Bespoke", "Break Action Failure To Eject", 10f, "Valid numbers are 0-100. By default, GenMult applies to this 50%.");
+			BespokeFailureBreakActionShotgunFTE = Config.Bind("Failures - Bespoke", "Break Action Failure To Eject", 20f, "Valid numbers are 0-100. By default, GenMult applies to this 50%.");
 			BespokeFailureBreakActionShotgunFTEGenMultAffect = Config.Bind("Failures - Bespoke", "Break Action Failure To Eject General Multiplier Affect", 0.5f, "General Multiplier is multiplied by this before affecting BA FTE.");
 
 			Harmony.CreateAndPatchAll(typeof(Meatyceiver));
@@ -144,7 +144,7 @@ namespace Meatyceiver2
 			float rand = (float)rnd.Next(0, 10001) / 100;
 			float chance = lightPrimerStrikeFailureRate.Value * generalMult.Value;
 			consoleDebugging(0, failureName, rand, chance);
-			if (rand <= lightPrimerStrikeFailureRate.Value * generalMult.Value)
+			if (rand <= chance)
 			{
 				consoleDebugging(1, failureName, rand, chance);
 				__instance.Chambers[__instance.CurChamber].IsSpent = false;
@@ -163,7 +163,7 @@ namespace Meatyceiver2
 			float rand = (float)rnd.Next(0, 10001) / 100;
 			float chance = lightPrimerStrikeFailureRate.Value * generalMult.Value;
 			consoleDebugging(0, failureName, rand, chance);
-			if (rand <= lightPrimerStrikeFailureRate.Value * generalMult.Value)
+			if (rand <= chance)
 			{
 				consoleDebugging(1, failureName, rand, chance);
 				__instance.Chambers[__instance.CurChamber].IsSpent = false;
@@ -256,7 +256,7 @@ namespace Meatyceiver2
 			float rand = (float)rnd.Next(0, 10001) / 100;
 			float chance = StovepipeRate.Value * generalMult.Value;
 			consoleDebugging(0, StovePipeFailureName, rand, chance);
-			if (rand <= 100 - StovepipeRate.Value * generalMult.Value)
+			if (rand <= chance)
 			{
 				consoleDebugging(1, StovePipeFailureName, rand, chance);
 				__instance.RotationInterpSpeed = 2;
@@ -265,7 +265,7 @@ namespace Meatyceiver2
 			rand = (float)rnd.Next(0, 10001) / 100;
 			chance = StovepipeRate.Value * generalMult.Value;
 			consoleDebugging(0, FTEfailureName, rand, chance);
-			if (rand <= FailureToExtractRate.Value * generalMult.Value)
+			if (rand <= chance)
 			{
 				consoleDebugging(1, FTEfailureName, rand, chance);
 				return false;
