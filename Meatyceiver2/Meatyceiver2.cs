@@ -10,7 +10,7 @@ using BepInEx.Configuration;
 
 namespace Meatyceiver2
 {
-	[BepInPlugin("dll.potatoes.meatyceiver2", "Meatyceiver2", "0.2.6")]
+	[BepInPlugin("dll.potatoes.meatyceiver2", "Meatyceiver2", "0.2.7")]
 	public class Meatyceiver : BaseUnityPlugin
 	{
 		private static ConfigEntry<bool> enableFirearmFailures;
@@ -67,9 +67,9 @@ namespace Meatyceiver2
 			DoubleFeedRate = Config.Bind("Failures - Firearm", "Double Feed Rate", 0.15f, "Valid numbers are 0-100");
 			StovepipeRate = Config.Bind("Failures - Firearm", "Stovepipe Rate", 0.1f, "Valid numbers are 0-100");
 
-			HammerFollowRate = Config.Bind("Failures - Broken Firearm", "Hammer Follow Rate", 0.05f, "Valid numbers are 0-100");
+			HammerFollowRate = Config.Bind("Failures - Broken Firearm", "Hammer Follow Rate", 0.1f, "Valid numbers are 0-100");
 			failureToLockSlide = Config.Bind("Failures - Broken Firearm", "Failure to Lock Slide Rate", 0.3f, "Valid numbers are 0-100");
-			SlamfireRate = Config.Bind("Failures - Broken Firearm", "Slam Fire Rate", 0.05f, "Valid numbers are 0-100");
+			SlamfireRate = Config.Bind("Failures - Broken Firearm", "Slam Fire Rate", 0.1f, "Valid numbers are 0-100");
 
 			BespokeFailureBreakActionShotgunFTE = Config.Bind("Failures - Bespoke", "Break Action Failure To Eject", 20f, "Valid numbers are 0-100. By default, GenMult applies to this 50%.");
 			BespokeFailureBreakActionShotgunFTEGenMultAffect = Config.Bind("Failures - Bespoke", "Break Action Failure To Eject General Multiplier Affect", 0.5f, "General Multiplier is multiplied by this before affecting BA FTE.");
@@ -229,6 +229,7 @@ namespace Meatyceiver2
 			__instance.RotationInterpSpeed = 1;
 		}
 
+
 		/*		[HarmonyPatch(typeof(Handgun), "CockHammer")]
 				[HarmonyPrefix]
 				static bool HammerFollowPatch(bool ___isManual)
@@ -260,7 +261,7 @@ namespace Meatyceiver2
 			{
 				consoleDebugging(1, StovePipeFailureName, rand, chance);
 				__instance.RotationInterpSpeed = 2;
-				return false;
+				return true;
 			}
 			rand = (float)rnd.Next(0, 10001) / 100;
 			chance = StovepipeRate.Value * generalMult.Value;
@@ -272,6 +273,137 @@ namespace Meatyceiver2
 			}
 			return true;
 		}
+
+		[HarmonyPatch(typeof(HandgunSlide), "UpdateSlide")]
+		[HarmonyPrefix]
+		static bool StovePipeHandgunSlidePatch(
+			HandgunSlide __instance,
+			float ___m_slideZ_forward,
+			float ___m_slideZ_rear,
+			float ___m_slideZ_current,
+			float ___m_curSlideSpeed,
+			out float __state
+			)
+		{
+			if (__instance.RotationInterpSpeed == 2)
+			{
+/*				if (___m_slideZ_current == null) Debug.Log("current nbull");
+				if (___m_slideZ_forward == null) Debug.Log("forward nbull");
+				if (___m_slideZ_rear == null) Debug.Log("rear nbull");*/
+
+				___m_slideZ_current = ___m_slideZ_forward - (___m_slideZ_forward - ___m_slideZ_rear) / 2;
+				Debug.Log("prefix slidez: " + ___m_slideZ_current);
+				___m_curSlideSpeed = 0;
+				if (__instance.CurPos == HandgunSlide.SlidePos.Rear)
+				{
+					__instance.RotationInterpSpeed = 1;
+					Debug.Log("Stovepipe cleared!");
+				}
+			}
+			__state = ___m_slideZ_current;
+			return true;
+		}
+
+		[HarmonyPatch(typeof(HandgunSlide), "UpdateSlide")]
+		[HarmonyPostfix]
+		static void StovePipeHandgunSlidePostfixPatch(HandgunSlide __instance, float ___m_slideZ_current, float __state)
+		{
+			//			if (__instance.RotationInterpSpeed == 2) Debug.Log("prefix slidez: " + __state + " postfix slidez: " + ___m_slideZ_current);
+			if (__instance.GameObject.transform.localPosition.z >= __state && __instance.RotationInterpSpeed == 2)
+			{
+				__instance.GameObject.transform.localPosition = new Vector3(__instance.GameObject.transform.localPosition.x, __instance.GameObject.transform.localPosition.y, __state);
+			}
+		}
+
+		[HarmonyPatch(typeof(FVRFireArmChamber), "EjectRound")]
+		[HarmonyPrefix]
+		static bool StovePipeHandgunEjectExtractedRoundPatch(FVRFireArmRound __result, FVRFireArmChamber __instance, FVRFireArmRound ___m_round, Vector3 EjectionPosition, Vector3 EjectionVelocity, Vector3 EjectionAngularVelocity, bool ForceCaseLessEject = false)
+		{
+			if (___m_round != null)
+			{
+				bool flag = false;
+				if (__instance.Firearm != null)
+				{
+					flag = true;
+					if (__instance.Firearm.HasImpactController)
+					{
+						__instance.Firearm.AudioImpactController.SetCollisionsTickDownMax(0.2f);
+					}
+				}
+				FVRFireArmRound fvrfireArmRound = null;
+				if (!___m_round.IsCaseless || ForceCaseLessEject)
+				{
+					GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(___m_round.gameObject, EjectionPosition, __instance.transform.rotation);
+					fvrfireArmRound = gameObject.GetComponent<FVRFireArmRound>();
+					if (flag)
+					{
+						fvrfireArmRound.SetIFF(GM.CurrentPlayerBody.GetPlayerIFF());
+					}
+					fvrfireArmRound.RootRigidbody.velocity = Vector3.Lerp(EjectionVelocity * 0.7f, EjectionVelocity, UnityEngine.Random.value) + GM.CurrentMovementManager.GetFilteredVel();
+					fvrfireArmRound.RootRigidbody.maxAngularVelocity = 200f;
+					fvrfireArmRound.RootRigidbody.angularVelocity = Vector3.Lerp(EjectionAngularVelocity * 0.3f, EjectionAngularVelocity, UnityEngine.Random.value);
+					if (__instance.IsSpent)
+					{
+						fvrfireArmRound.SetKillCounting(true);
+						fvrfireArmRound.Fire();
+					}
+
+					if (__instance.Firearm is Handgun) {
+						var handgunSlide = __instance.Firearm.transform.GetComponent<Handgun>().Slide;
+						if (handgunSlide.RotationInterpSpeed == 2)
+						{
+							gameObject.GetComponent<FVRFireArmRound>().RootRigidbody.isKinematic = true;
+							gameObject.transform.SetParent(handgunSlide.transform, true);
+							gameObject.transform.position = Vector3.Lerp(handgunSlide.Point_Slide_Forward.transform.position, handgunSlide.Point_Slide_Rear.transform.position, 0.2f);
+						}
+					}
+				}
+				__instance.SetRound(null);
+				__result = fvrfireArmRound;
+				return false;
+			}
+			__result = null;
+			return false;
+		}
+		/*		static void StovePipeHandgunEjectExtractedRoundPatch(FVRFireArmChamber __instance, GameObject gameObject)
+				{
+					if (__instance.Firearm is Handgun) return;
+					var handgunSlide = __instance.Firearm.transform.GetComponent<Handgun>().Slide;
+					if (handgunSlide.RotationInterpSpeed == 2)
+					{
+						gameObject.GetComponent<FVRFireArmRound>().RootRigidbody.isKinematic = true;
+						gameObject.transform.SetParent(handgunSlide.transform, true);
+						gameObject.transform.position = Vector3.Lerp(handgunSlide.Point_Slide_Forward.transform.position, handgunSlide.Point_Slide_Rear.transform.position, 0.2f);
+					}
+				}*/
+
+		[HarmonyPatch(typeof(FVRFireArmRound), "FVRFixedUpdate")]
+		[HarmonyPrefix]
+		static bool StovePipeFVRFireArmRoundPatch(FVRFireArmRound __instance)
+		{
+			if (__instance.RootRigidbody.isKinematic)
+			{
+				var hgslide = __instance.Transform.parent.GetComponent<HandgunSlide>();
+				if (__instance.IsHeld == true || hgslide.RotationInterpSpeed == 1)
+				{
+					__instance.RootRigidbody.isKinematic = false;
+					hgslide.RotationInterpSpeed = 1;
+					Debug.Log("Stovepipe cleared!");
+					__instance.Transform.parent = null;
+				}
+			}
+			return true;
+		}
+
+
+
+		/*		[HarmonyPatch(typeof(Handgun), "Awake")]
+				[HarmonyPrefix]
+				static bool addStovePipeScript(Handgun __instance)
+				{
+					__instance.GameObject.AddComponent<StovePipe>();
+					return true;
+				}*/
 
 		//BEGIN BROKEN FIREARM FAILURES
 
