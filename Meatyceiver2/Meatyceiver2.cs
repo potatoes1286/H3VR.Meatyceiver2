@@ -10,7 +10,7 @@ using BepInEx.Configuration;
 
 namespace Meatyceiver2
 {
-	[BepInPlugin("dll.potatoes.meatyceiver2", "Meatyceiver2", "0.2.10")]
+	[BepInPlugin("dll.potatoes.meatyceiver2", "Meatyceiver2", "0.2.12")]
 	public class Meatyceiver : BaseUnityPlugin
 	{
 		//General Settings
@@ -65,8 +65,9 @@ namespace Meatyceiver2
 		private static ConfigEntry<float> breakActionFTE;
 		private static ConfigEntry<float> breakActionFTEMultAffect;
 
-		private static ConfigEntry<float> bespokeFailureRevolverFTE;
-		private static ConfigEntry<float> bespokeFailureRevolverFTEGenMultAffect;
+		private static ConfigEntry<float> revolverFTE;
+		private static ConfigEntry<float> revolverFTEGenMultAffect;
+//		private static ConfigEntry<float> revolverFTEshakeMult;
 
 		public static System.Random randomVar;
 
@@ -101,11 +102,11 @@ namespace Meatyceiver2
 			failureToLockSlide = Config.Bind("Failures - Broken Firearm", "Failure to Lock Slide Rate", 5f, "Valid numbers are 0-100");
 			slamfireRate = Config.Bind("Failures - Broken Firearm", "Slam Fire Rate", 0.1f, "Valid numbers are 0-100");
 
-			breakActionFTE = Config.Bind("Failures - Bespoke", "Break Action Failure To Eject", 30f, "Valid numbers are 0-100. By default, GenMult applies to this 50%.");
+			breakActionFTE = Config.Bind("Failures - Bespoke", "Break Action Failure To Eject", 20f, "Valid numbers are 0-100. By default, GenMult applies to this 50%.");
 			breakActionFTEMultAffect = Config.Bind("Failures - Bespoke", "Break Action Failure To Eject General Multiplier Affect", 0.5f, "General Multiplier is multiplied by this before affecting BA FTE.");
-			bespokeFailureRevolverFTE = Config.Bind("Failures - Bespoke", "Revolver Failure To Eject", 30f, "Valid numbers are 0-100. By default, GenMult applies to this 50%.");
-			bespokeFailureRevolverFTEGenMultAffect = Config.Bind("Failures - Bespoke", "Revolver Failure To Eject General Multiplier Affect", 0.5f, "General Multiplier is multiplied by this before affecting Rev FTE.");
-
+			revolverFTE = Config.Bind("Failures - Bespoke", "Revolver Failure To Eject", 10f, "Valid numbers are 0-100. By default, GenMult applies to this 50%.");
+			revolverFTEGenMultAffect = Config.Bind("Failures - Bespoke", "Revolver Failure To Eject General Multiplier Affect", 0.5f, "General Multiplier is multiplied by this before affecting Rev FTE.");
+//			revolverFTEshakeMult = Config.Bind("Failures - Bespoke", "Revolver FTE Shake Multiplier", 1.5f, "Multiplies FTE chance by this much when cylinder is shaken, not ejected.");
 
 
 			Harmony.CreateAndPatchAll(typeof(Meatyceiver));
@@ -222,7 +223,9 @@ namespace Meatyceiver2
 			{
 				if (!__instance.Magazine.IsBeltBox)
 				{
-					failureinc = (float)((__instance.Magazine.m_capacity - minRoundCount.Value) * failureIncPerRound.Value) * (generalMult.Value * magUnreliabilityGenMultAffect.Value);
+					if (__instance.Magazine.m_capacity > minRoundCount.Value) {
+						failureinc = (float)((__instance.Magazine.m_capacity - minRoundCount.Value) * failureIncPerRound.Value) * (generalMult.Value * magUnreliabilityGenMultAffect.Value);
+					}
 				}
 			}
 			float chance = hammerFollowRate.Value * generalMult.Value + failureinc;
@@ -237,19 +240,81 @@ namespace Meatyceiver2
 
 		[HarmonyPatch(typeof(BreakActionWeapon), "PopOutRound")]
 		[HarmonyPrefix]
-		static bool FTPEmptyBreakAction(BreakActionWeapon __instance, FVRFireArm chamber)
+		static bool FTEEmptyBreakAction(BreakActionWeapon __instance, FVRFireArm chamber)
 		{
 			string failureName = "BA FTE";
 			if (!enableFirearmFailures.Value) return true;
 			if (chamber.RotationInterpSpeed == 2) return false;
 			float rand = (float)randomVar.Next(0, 10001) / 100;
-			float chance = breakActionFTE.Value * (generalMult.Value * breakActionFTEMultAffect.Value);
+			float chance = breakActionFTE.Value + (breakActionFTE.Value * (generalMult.Value - 1) * breakActionFTEMultAffect.Value);
 			consoleDebugging(0, failureName, rand, chance);
 			if (rand <= chance)
 			{
 				consoleDebugging(1, failureName, rand, chance);
 				chamber.RotationInterpSpeed = 2;
 				return false;
+			}
+			return true;
+		}
+
+		[HarmonyPatch(typeof(Revolver), "UpdateCylinderRelease")]
+		[HarmonyPostfix]
+		static void RevolverUnjamChambers(Revolver __instance)
+		{
+			float z = __instance.transform.InverseTransformDirection(__instance.m_hand.Input.VelLinearWorld).z;
+			if (z > 0f)
+			{
+				for (int i = 0; i < __instance.Chambers.Length; i++)
+				{
+					__instance.Chambers[i].RotationInterpSpeed = 1;
+				}
+			}
+		}
+
+		[HarmonyPatch(typeof(FVRFireArmChamber), "EjectRound")]
+		[HarmonyPrefix]
+		static bool RevolverAndRollingBlockFTE(FVRFireArmChamber __instance)
+		{
+			if (!enableFirearmFailures.Value) return true;
+			if (__instance.Firearm is Revolver)
+			{
+				if (__instance.RotationInterpSpeed == 1)
+				{
+					string failureName = "Revolver FTE";
+					float rand = (float)randomVar.Next(0, 10001) / 100;
+					float chance = revolverFTE.Value + (revolverFTE.Value * (generalMult.Value - 1) * revolverFTEGenMultAffect.Value);
+					consoleDebugging(0, failureName, rand, chance);
+					if (rand <= chance)
+					{
+						consoleDebugging(1, failureName, rand, chance);
+						__instance.RotationInterpSpeed = 2;
+						return false;
+					}
+				}
+			}
+
+			if (__instance.Firearm is RollingBlock)
+			{
+				string failureName = "Rolling block FTE";
+				float rand = (float)randomVar.Next(0, 10001) / 100;
+				float chance = breakActionFTE.Value + (breakActionFTE.Value * (generalMult.Value - 1) * breakActionFTEMultAffect.Value);
+				consoleDebugging(0, failureName, rand, chance);
+				if (rand <= chance)
+				{
+					consoleDebugging(1, failureName, rand, chance);
+					return false;
+				}
+			}
+			return true;
+		}
+
+		[HarmonyPatch(typeof(FVRFireArmChamber), "Awake")]
+		[HarmonyPrefix]
+		static bool RollingBlockChamberAddEjectPointPatch(FVRFireArmChamber __instance)
+		{
+			if(__instance.Firearm is RollingBlock)
+			{
+					__instance.IsManuallyExtractable = true;
 			}
 			return true;
 		}
@@ -283,11 +348,10 @@ namespace Meatyceiver2
 		{
 			string FTEfailureName = "FTE";
 			string StovePipeFailureName = "Stovepipe";
-			if (__instance is BoltActionRifle) { return false; }
-			if (__instance is LeverActionFirearm) { return false; }
-			if (!enableFirearmFailures.Value) { return true; }
+			if (__instance is BoltActionRifle || __instance is LeverActionFirearm) return false;
+			if (!enableFirearmFailures.Value) return true;
 			float rand = (float)randomVar.Next(0, 10001) / 100;
-			float chance = stovepipeRate.Value * generalMult.Value;
+			float chance = failureToExtractRate.Value * generalMult.Value;
 			consoleDebugging(0, StovePipeFailureName, rand, chance);
 			if (rand <= chance)
 			{
@@ -295,14 +359,14 @@ namespace Meatyceiver2
 				__instance.RotationInterpSpeed = 2;
 				return false;
 			}
-			rand = (float)randomVar.Next(0, 10001) / 100;
-			chance = stovepipeRate.Value * generalMult.Value;
-			consoleDebugging(0, FTEfailureName, rand, chance);
-			if (rand <= chance)
-			{
-				consoleDebugging(1, FTEfailureName, rand, chance);
-				return false;
-			}
+//			rand = (float)randomVar.Next(0, 10001) / 100;
+//			chance = stovepipeRate.Value * generalMult.Value;
+//			consoleDebugging(0, FTEfailureName, rand, chance);
+//			if (rand <= chance)
+//			{
+//				consoleDebugging(1, FTEfailureName, rand, chance);
+//				return false;
+//			}
 			return true;
 		}
 
