@@ -224,7 +224,8 @@ namespace Meatyceiver2
 				if (!__instance.Magazine.IsBeltBox)
 				{
 					if (__instance.Magazine.m_capacity > minRoundCount.Value) {
-						failureinc = (float)((__instance.Magazine.m_capacity - minRoundCount.Value) * failureIncPerRound.Value) * (generalMult.Value * magUnreliabilityGenMultAffect.Value);
+						float baseFailureInc = (float)((__instance.Magazine.m_capacity - minRoundCount.Value) * failureIncPerRound.Value);
+						failureinc = (float)(baseFailureInc + (baseFailureInc * generalMult.Value - 1 * magUnreliabilityGenMultAffect.Value));
 					}
 				}
 			}
@@ -419,143 +420,8 @@ namespace Meatyceiver2
 			}
 		}
 
-		/*		[HarmonyPatch(typeof(FVRFireArmChamber), "EjectRound")]
-				[HarmonyPrefix]
-				static bool StovePipeHandgunEjectExtractedRoundPatch(FVRFireArmRound __result, FVRFireArmChamber __instance, FVRFireArmRound ___m_round, Vector3 EjectionPosition, Vector3 EjectionVelocity, Vector3 EjectionAngularVelocity, bool ForceCaseLessEject = false)
-				{
-					if (___m_round != null)
-					{
-						bool flag = false;
-						if (__instance.Firearm != null)
-						{
-							flag = true;
-							if (__instance.Firearm.HasImpactController)
-							{
-								__instance.Firearm.AudioImpactController.SetCollisionsTickDownMax(0.2f);
-							}
-						}
-						FVRFireArmRound fvrfireArmRound = null;
-						if (!___m_round.IsCaseless || ForceCaseLessEject)
-						{
-							GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(___m_round.gameObject, EjectionPosition, __instance.transform.rotation);
-							fvrfireArmRound = gameObject.GetComponent<FVRFireArmRound>();
-							if (flag)
-							{
-								fvrfireArmRound.SetIFF(GM.CurrentPlayerBody.GetPlayerIFF());
-							}
-							fvrfireArmRound.RootRigidbody.velocity = Vector3.Lerp(EjectionVelocity * 0.7f, EjectionVelocity, UnityEngine.Random.value) + GM.CurrentMovementManager.GetFilteredVel();
-							fvrfireArmRound.RootRigidbody.maxAngularVelocity = 200f;
-							fvrfireArmRound.RootRigidbody.angularVelocity = Vector3.Lerp(EjectionAngularVelocity * 0.3f, EjectionAngularVelocity, UnityEngine.Random.value);
-							if (__instance.IsSpent)
-							{
-								fvrfireArmRound.SetKillCounting(true);
-								fvrfireArmRound.Fire();
-							}
-
-							if (__instance.Firearm is Handgun) {
-								var handgunSlide = __instance.Firearm.transform.GetComponent<Handgun>().Slide;
-								if (handgunSlide.RotationInterpSpeed == 2)
-								{
-									gameObject.GetComponent<FVRFireArmRound>().RootRigidbody.isKinematic = true;
-									gameObject.transform.SetParent(handgunSlide.transform, true);
-									gameObject.transform.position = Vector3.Lerp(handgunSlide.Point_Slide_Forward.transform.position, handgunSlide.Point_Slide_Rear.transform.position, 0.2f);
-								}
-							}
-						}
-						__instance.SetRound(null);
-						__result = fvrfireArmRound;
-						return false;
-					}
-					__result = null;
-					return false;
-				}
-				/*		static void StovePipeHandgunEjectExtractedRoundPatch(FVRFireArmChamber __instance, GameObject gameObject)
-						{
-							if (__instance.Firearm is Handgun) return;
-							var handgunSlide = __instance.Firearm.transform.GetComponent<Handgun>().Slide;
-							if (handgunSlide.RotationInterpSpeed == 2)
-							{
-								gameObject.GetComponent<FVRFireArmRound>().RootRigidbody.isKinematic = true;
-								gameObject.transform.SetParent(handgunSlide.transform, true);
-								gameObject.transform.position = Vector3.Lerp(handgunSlide.Point_Slide_Forward.transform.position, handgunSlide.Point_Slide_Rear.transform.position, 0.2f);
-							}
-						}*/
-
-		/*		[HarmonyPatch(typeof(FVRFireArmRound), "FVRFixedUpdate")]
-				[HarmonyPrefix]
-				static bool StovePipeFVRFireArmRoundPatch(FVRFireArmRound __instance)
-				{
-					if (__instance.RootRigidbody.isKinematic)
-					{
-						var hgslide = __instance.Transform.parent.GetComponent<HandgunSlide>();
-						if (__instance.IsHeld == true || hgslide.RotationInterpSpeed == 1)
-						{
-							__instance.RootRigidbody.isKinematic = false;
-							hgslide.RotationInterpSpeed = 1;
-							Debug.Log("Stovepipe cleared!");
-							__instance.Transform.parent = null;
-						}
-					}
-					return true;
-				}*/
-
-
-
-		/*		[HarmonyPatch(typeof(Handgun), "Awake")]
-				[HarmonyPrefix]
-				static bool addStovePipeScript(Handgun __instance)
-				{
-					__instance.GameObject.AddComponent<StovePipe>();
-					return true;
-				}*/
-
 		//BEGIN BROKEN FIREARM FAILURES
 
-		/*		[HarmonyPatch(typeof(HandgunSlide), "UpdateSlide")]
-				[HarmonyPrefix]
-				static bool StovepipeHandgunSlidePatch(
-					HandgunSlide __instance,
-					float ___m_slideZ_forward,
-					float ___m_slideZ_rear,
-					float ___m_slideZ_lock,
-					float ___m_slideZ_current)
-				{
-					if (prevSlideZLock == -999f)
-					{
-						prevSlideZLock = ___m_slideZ_lock;
-					}
-
-					if (__instance.RotationInterpSpeed == 2)
-					{
-						if (__instance.CurPos == HandgunSlide.SlidePos.Rear)
-						{
-							if (enableConsoleDebugging.Value) { Debug.Log("Stovepipe cleared!"); }
-							__instance.RotationInterpSpeed = 1;
-							___m_slideZ_lock = prevSlideZLock;
-						}
-						else
-						{
-							var m_slideStovePipe = ___m_slideZ_forward - (___m_slideZ_forward - ___m_slideZ_rear) / 2;
-							if (___m_slideZ_current > m_slideStovePipe)
-							{
-								___m_slideZ_current = m_slideStovePipe;
-							}
-		//				Debug.Log("m_slideStovePipe: " + m_slideStovePipe);
-						}
-
-					}
-					return true;
-				}
-		/*		[HarmonyPatch(typeof(Handgun), "IsSlideCatchEngaged")]
-				[HarmonyPrefix]
-				static bool StovepipeHandgunPatch(Handgun __instance, ref bool __result)
-				{
-					if (__instance.Slide.RotationInterpSpeed == 2)
-					{
-						__instance.IsSlideLockUp = true;
-					}
-					return true;
-				}*/
 		[HarmonyPatch(typeof(HandgunSlide), "SlideEvent_ArriveAtFore")]
 		[HarmonyPostfix]
 		static void SFHandgun(HandgunSlide __instance)
