@@ -105,8 +105,8 @@ namespace Meatyceiver2
 
 			breakActionFTE = Config.Bind(Strings.BespokeFailure, Strings.BreakActionFTE_key, 30f, Strings.ValidInput_float);
 			breakActionFTEMultAffect = Config.Bind(Strings.BespokeFailure, Strings.BreakActionFTEMult_key,  0.5f, Strings.FTEMult_description);
-			bespokeFailureRevolverFTE = Config.Bind(Strings.BespokeFailure, Strings.RevolverFTE_key, 30f, Strings.ValidInput_float);
-			bespokeFailureRevolverFTEGenMultAffect = Config.Bind(Strings.BespokeFailure, Strings.RevolverFTERate_key, 0.5f, Strings.FTEMult_description);
+			revolverFTE = Config.Bind(Strings.BespokeFailure, Strings.RevolverFTE_key, 30f, Strings.ValidInput_float);
+			revolverFTEGenMultAffect = Config.Bind(Strings.BespokeFailure, Strings.RevolverFTERate_key, 0.5f, Strings.FTEMult_description);
 
 
 
@@ -354,7 +354,7 @@ namespace Meatyceiver2
 			if (__instance is BoltActionRifle || __instance is LeverActionFirearm) return false;
 			if (!enableFirearmFailures.Value) return true;
 			float rand = (float)randomVar.Next(0, 10001) / 100;
-			float chance = failureToExtractRate.Value * generalMult.Value;
+			float chance = FTERate.Value * generalMult.Value;
 			consoleDebugging(0, StovePipeFailureName, rand, chance);
 			if (rand <= chance)
 			{
