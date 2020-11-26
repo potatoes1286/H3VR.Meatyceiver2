@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true"
+            
+        ></xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="GeneralSettings" xml:space="preserve">
+        <value>General Settings</value>
+    </data>
+    <data name="EnableAmmunitionFailures.key" xml:space="preserve">
+        <value>Enable Ammunition Failures</value>
+    </data>
+    <data name="EnableAmmunitionFailures.description" xml:space="preserve">
+        <value>Enables ammunition related failures.</value>
+    </data>
+    <data name="EnableFirearmFailures.key" xml:space="preserve">
+        <value>Enable Firearm Failures</value>
+    </data>
+    <data name="EnableFirearmFailures.description" xml:space="preserve">
+        <value>Enable firearm related failures.</value>
+    </data>
+    <data name="EnableConsoleDebugging.key" xml:space="preserve">
+        <value>Enable Console Debugging</value>
+    </data>
+    <data name="EnableBrokenFirearmFailures.key" xml:space="preserve">
+        <value>Enable Broken Firearm Failures</value>
+    </data>
+    <data name="EnableBrokenFirearmFailures.description" xml:space="preserve">
+        <value>Enables failures related to permanent firearm damage.</value>
+    </data>
+    <data name="GeneralMultipliers.key" xml:space="preserve">
+        <value>Failure Chance Multiplier</value>
+    </data>
+    <data name="GeneralMultipliers.section" xml:space="preserve">
+        <value>Multipliers</value>
+    </data>
+    <data name="GeneralMultipliers.description" xml:space="preserve">
+        <value>default is at 1x is 1%, so this is a more "pick failure percentage chance".</value>
+    </data>
+    <data name="EnableConsoleDebugging.description" xml:space="preserve">
+        <value>Enable Console Debugging. Default false</value>
+    </data>
+    <data name="MagUnreliability.section" xml:space="preserve">
+        <value>Secondary Failure - Mag Unreliability</value>
+    </data>
+    <data name="MagReliability.key" xml:space="preserve">
+        <value>Enable Mag Unreliability</value>
+    </data>
+    <data name="MagReliability.description" xml:space="preserve">
+        <value>Enables mag unreliability chance multipliers</value>
+    </data>
+    <data name="MagReliabilityMult.key" xml:space="preserve">
+        <value>Mag Unreliability Multiplier</value>
+    </data>
+    <data name="MagReliabilityMult.description" xml:space="preserve">
+        <value>Every round in a mag past Minimum Mag Count increases FTF failure percent chance this much. Separate from General Multiplier.</value>
+    </data>
+    <data name="MinRoundCount.key" xml:space="preserve">
+        <value>Minimum Mag Count</value>
+    </data>
+    <data name="MinRoundCount.description" xml:space="preserve">
+        <value>Max mag round counts above this incurs higher unreliability.</value>
+    </data>
+    <data name="MagUnreliabilityMult.key" xml:space="preserve">
+        <value>Mag Unreliability General Multiplier Affect</value>
+    </data>
+    <data name="MagUnreliabilityMult.description" xml:space="preserve">
+        <value>Max mag round counts above this incurs higher unreliability.</value>
+    </data>
+    <data name="LongTermBreak.section" xml:space="preserve">
+        <value>Secondary Failure - Long Term Breakdown</value>
+    </data>
+    <data name="LongTermBreak.key" xml:space="preserve">
+        <value>Enable Long Term Breakdown</value>
+    </data>
+    <data name="LongTermBreak.description" xml:space="preserve">
+        <value>i hvaent implemented it yet, but it's basically the gun jams more often the more rounds you put thru it</value>
+    </data>
+    <data name="AmmoFailures.section" xml:space="preserve">
+        <value>Failures - Ammo</value>
+    </data>
+    <data name="LPSRate.key" xml:space="preserve">
+        <value>Light Primer Strike Failure Rate</value>
+    </data>
+    <data name="ValidInput.float" xml:space="preserve">
+        <value>Valid input: Float, 0f - 100f</value>
+    </data>
+    <data name="HangFireRate.key" xml:space="preserve">
+        <value>Hang Fire Rate</value>
+    </data>
+    <data name="FirearmFailures.section" xml:space="preserve">
+        <value>Failures - Firearm</value>
+    </data>
+    <data name="DEBUG" xml:space="preserve">
+        <value>Debug ;)</value>
+    </data>
+    <data name="FTFRate.key" xml:space="preserve">
+        <value>Failure to Feed Rate</value>
+    </data>
+    <data name="FTERate.key" xml:space="preserve">
+        <value>Failure to Eject rate</value>
+    </data>
+    <data name="DFRate.key" xml:space="preserve">
+        <value>Double Feed Rate</value>
+    </data>
+    <data name="StovepipeRate.key" xml:space="preserve">
+        <value>Stovepipe Rate</value>
+    </data>
+    <data name="StovepipeLerp.key" xml:space="preserve">
+        <value>Stovepipe Lerp</value>
+    </data>
+    <data name="BrokenFirearmFailure" xml:space="preserve">
+        <value>Failures - Broken Firearm</value>
+    </data>
+    <data name="HFRate.key" xml:space="preserve">
+        <value>Hammer Follow Rate</value>
+    </data>
+    <data name="FTLSlide.key" xml:space="preserve">
+        <value>Failure to Lock Slide Rate</value>
+    </data>
+    <data name="SlamFireRate.key" xml:space="preserve">
+        <value>Slam Fire Rate</value>
+    </data>
+    <data name="BespokeFailure" xml:space="preserve">
+        <value>Failures - Bespoke</value>
+    </data>
+    <data name="BreakActionFTE.key" xml:space="preserve">
+        <value>Break Action failure to eject rate</value>
+    </data>
+    <data name="BreakActionFTEMult.key" xml:space="preserve">
+        <value>Break Action Failure To Eject General Multiplier Affect</value>
+    </data>
+    <data name="RevolverFTE.key" xml:space="preserve">
+        <value>Revolver Failure to eject rate</value>
+    </data>
+    <data name="RevolverFTERate.key" xml:space="preserve">
+        <value>Revolver Failure To Eject General Multiplier Affect</value>
+    </data>
+    <data name="FTEMult.description" xml:space="preserve">
+        <value>General Multiplier is multiplied by this before affecting BA FTE.</value>
+    </data>
+</root>
