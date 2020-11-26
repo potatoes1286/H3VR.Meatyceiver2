@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Resources;
 using HarmonyLib;
 using FistVR;
 using UnityEngine;
-using BepInEx.Harmony;
 using BepInEx;
+using BepInEx.Logging;
 using BepInEx.Configuration;
 
 namespace Meatyceiver2
@@ -13,6 +11,7 @@ namespace Meatyceiver2
 	[BepInPlugin("dll.potatoes.meatyceiver2", "Meatyceiver2", "0.2.12")]
 	public class Meatyceiver : BaseUnityPlugin
 	{
+		private ResourceManager stringManager = new ResourceManager(typeof(Resources));
 		//General Settings
 
 		private static ConfigEntry<bool> enableFirearmFailures;
@@ -42,21 +41,21 @@ namespace Meatyceiver2
 
 		//Failures - Ammo
 
-		private static ConfigEntry<float> lightPrimerStrikeFailureRate;
-		private static ConfigEntry<float> hangFireRate;
+		private static ConfigEntry<float> LPSFailureRate;
+		private static ConfigEntry<float> handFireRate;
 
 		//Failures - Firearms
 
-		private static ConfigEntry<float> failureToFeedRate;
-		private static ConfigEntry<float> failureToExtractRate;
-		private static ConfigEntry<float> doubleFeedRate;
+		private static ConfigEntry<float> FTFRate;
+		private static ConfigEntry<float> FTERate;
+		private static ConfigEntry<float> DFRate;
 		private static ConfigEntry<float> stovepipeRate;
 		private static ConfigEntry<float> stovepipeLerp;
 
 		//Failures - Broken Firearm
 
-		private static ConfigEntry<float> hammerFollowRate;
-		private static ConfigEntry<float> failureToLockSlide;
+		private static ConfigEntry<float> HFRate;
+		private static ConfigEntry<float> FTLSlide;
 		private static ConfigEntry<float> slamfireRate;
 
 
@@ -73,40 +72,42 @@ namespace Meatyceiver2
 
 		void Awake()
 		{
-			UnityEngine.Debug.Log("Meatyceiver2 started!");
-			enableAmmunitionFailures = Config.Bind("_General Settings", "Enable Ammunition Failures", true, "Enables ammunition related failures.");
-			enableFirearmFailures = Config.Bind("_General Settings", "Enable Firearm Failures", true, "Enables firearm related failures.");
-			enableBrokenFirearmFailures = Config.Bind("_General Settings", "Enable Broken Firearm Failures", true, "Enables failures related to permanent firearm damage.");
-			enableConsoleDebugging = Config.Bind("_General Settings", "Enable Console Debugging", false, "Exports values and failures to console.");
+	
+			Logger.LogInfo("Meatyceiver2 started!");
+			
+			enableAmmunitionFailures = Config.Bind(Strings.GeneralSettings, Strings.EnableAmmunitionFailures_key, true, Strings.EnableAmmunitionFailures_description);
+			enableFirearmFailures = Config.Bind(Strings.GeneralSettings, Strings.EnableFirearmFailures_key, true, Strings.EnableFirearmFailures_description);
+			enableBrokenFirearmFailures = Config.Bind(Strings.GeneralSettings, Strings.EnableBrokenFirearmFailures_key, true, Strings.EnableBrokenFirearmFailures_description);
+			enableConsoleDebugging = Config.Bind(Strings.GeneralSettings,Strings.EnableConsoleDebugging_key, false, Strings.EnableConsoleDebugging_description);
 
-			generalMult = Config.Bind("_Multipliers", "Failure Chance Multiplier", 1f, "default at 1x is 1%, so this is a more 'pick failure percentage chance'.");
+			generalMult = Config.Bind(Strings.GeneralMultipliers_section, Strings.GeneralMultipliers_key, 1f, Strings.GeneralMultipliers_description);
 
 
-			enableMagUnreliability = Config.Bind("Secondary Failure - Mag Unreliability", "Enable Mag Unreliability", true, "Enables mag unreliability chance multipliers.");
-			failureIncPerRound = Config.Bind("Secondary Failure - Mag Unreliability", "Mag Unreliability Multiplier", 0.04f, "Every round in a mag past Minimum Mag Count increases FTF failure percent chance this much. Separate from General Multiplier.");
-			minRoundCount = Config.Bind("Secondary Failure - Mag Unreliability", "Minimum Mag Count", 15, "Max mag round counts above this incurs higher unreliability.");
-			magUnreliabilityGenMultAffect = Config.Bind("Secondary Failure - Mag Unreliability", "Mag Unreliability General Multiplier Affect", 0.5f, "Max mag round counts above this incurs higher unreliability.");
+			enableMagUnreliability = Config.Bind(Strings.MagUnreliability_section, Strings.MagReliability_key, true, Strings.MagReliability_description);
+			failureIncPerRound = Config.Bind(Strings.MagUnreliability_section, Strings.MagReliabilityMult_key, 0.04f, Strings.MagReliabilityMult_description);
+			minRoundCount = Config.Bind(Strings.MagUnreliability_section, Strings.MinRoundCount_key, 15, Strings.MinRoundCount_description);
+			magUnreliabilityGenMultAffect = Config.Bind(Strings.MagUnreliability_section, Strings.MagUnreliabilityMult_key, 0.5f, Strings.MagUnreliabilityMult_description);
 
-			enableLongTermBreakdown = Config.Bind("Secondary Failure - Long Term Breakdown", "Enable Long Term Breakdown", true, "Enables long term breakdown of firearms.");
+			//enableLongTermBreakdown = Config.Bind(Strings.LongTermBreak_section, Strings.LongTermBreak_key, true, Strings.LongTermBreak_description);
 
-			lightPrimerStrikeFailureRate = Config.Bind("Failures - Ammo", "Light Primer Strike Failure Rate", 0.25f, "Valid numbers are 0-100");
-			hangFireRate = Config.Bind("Failures - Ammo", "Hang Fire Rate", 0.1f, "Valid numbers are 0-100");
+			LPSFailureRate = Config.Bind(Strings.AmmoFailures_section, Strings.LPSRate_key, 0.25f, Strings.ValidInput_float);
+			handFireRate = Config.Bind(Strings.AmmoFailures_section, Strings.HangFireRate_key, 0.1f, Strings.ValidInput_float);
 
-			failureToFeedRate = Config.Bind("Failures - Firearm", "Failure to Feed Rate", 0.25f, "Valid numbers are 0-100");
-			failureToExtractRate = Config.Bind("Failures - Firearm", "Failure to Eject Rate", 0.15f, "Valid numbers are 0-100");
-			doubleFeedRate = Config.Bind("Failures - Firearm", "Double Feed Rate", 0.15f, "Valid numbers are 0-100");
-			stovepipeRate = Config.Bind("Failures - Firearm", "Stovepipe Rate", 0.1f, "Valid numbers are 0-100");
-			stovepipeLerp = Config.Bind("Failures - Firearm", "Stovepipe Lerp", 0.5f, "debug thing.");
+			FTFRate = Config.Bind(Strings.FirearmFailures_section, Strings.FTFRate_key, 0.25f, Strings.ValidInput_float);
+			FTERate = Config.Bind(Strings.FirearmFailures_section, Strings.FTERate_key, 0.15f, Strings.ValidInput_float);
+			DFRate = Config.Bind(Strings.FirearmFailures_section, Strings.DFRate_key, 0.15f, Strings.ValidInput_float);
+			stovepipeRate = Config.Bind(Strings.FirearmFailures_section, Strings.StovepipeRate_key, 0.1f, Strings.ValidInput_float);
+			stovepipeLerp = Config.Bind(Strings.FirearmFailures_section, Strings.StovepipeLerp_key, 0.5f, Strings.DEBUG);
 
-			hammerFollowRate = Config.Bind("Failures - Broken Firearm", "Hammer Follow Rate", 0.1f, "Valid numbers are 0-100");
-			failureToLockSlide = Config.Bind("Failures - Broken Firearm", "Failure to Lock Slide Rate", 5f, "Valid numbers are 0-100");
-			slamfireRate = Config.Bind("Failures - Broken Firearm", "Slam Fire Rate", 0.1f, "Valid numbers are 0-100");
+			HFRate = Config.Bind(Strings.BrokenFirearmFailure, Strings.HFRate_key, 0.1f, Strings.ValidInput_float);
+			FTLSlide = Config.Bind(Strings.BrokenFirearmFailure, Strings.FTLSlide_key, 5f, Strings.ValidInput_float);
+			slamfireRate = Config.Bind(Strings.BrokenFirearmFailure, Strings.SlamFireRate_key, 0.1f, Strings.ValidInput_float);
 
-			breakActionFTE = Config.Bind("Failures - Bespoke", "Break Action Failure To Eject", 20f, "Valid numbers are 0-100. By default, GenMult applies to this 50%.");
-			breakActionFTEMultAffect = Config.Bind("Failures - Bespoke", "Break Action Failure To Eject General Multiplier Affect", 0.5f, "General Multiplier is multiplied by this before affecting BA FTE.");
-			revolverFTE = Config.Bind("Failures - Bespoke", "Revolver Failure To Eject", 10f, "Valid numbers are 0-100. By default, GenMult applies to this 50%.");
-			revolverFTEGenMultAffect = Config.Bind("Failures - Bespoke", "Revolver Failure To Eject General Multiplier Affect", 0.5f, "General Multiplier is multiplied by this before affecting Rev FTE.");
-//			revolverFTEshakeMult = Config.Bind("Failures - Bespoke", "Revolver FTE Shake Multiplier", 1.5f, "Multiplies FTE chance by this much when cylinder is shaken, not ejected.");
+			breakActionFTE = Config.Bind(Strings.BespokeFailure, Strings.BreakActionFTE_key, 30f, Strings.ValidInput_float);
+			breakActionFTEMultAffect = Config.Bind(Strings.BespokeFailure, Strings.BreakActionFTEMult_key,  0.5f, Strings.FTEMult_description);
+			bespokeFailureRevolverFTE = Config.Bind(Strings.BespokeFailure, Strings.RevolverFTE_key, 30f, Strings.ValidInput_float);
+			bespokeFailureRevolverFTEGenMultAffect = Config.Bind(Strings.BespokeFailure, Strings.RevolverFTERate_key, 0.5f, Strings.FTEMult_description);
+
 
 
 			Harmony.CreateAndPatchAll(typeof(Meatyceiver));
@@ -116,6 +117,7 @@ namespace Meatyceiver2
 
 		public static void consoleDebugging(short responseType, string _failName, float _rand, float _percentChance)
 		{
+			
 			if (!enableConsoleDebugging.Value) return;
 			switch (responseType)
 			{
@@ -147,9 +149,9 @@ namespace Meatyceiver2
 			if (!enableAmmunitionFailures.Value) return true;
 			if (__instance.Firearm is Revolver || __instance.Firearm is RevolvingShotgun) return true;
 			float rand = (float)randomVar.Next(0, 10001) / 100;
-			float chance = lightPrimerStrikeFailureRate.Value * generalMult.Value;
+			float chance = LPSFailureRate.Value * generalMult.Value;
 			consoleDebugging(0, failureName, rand, chance);
-			//			if (enableConsoleDebugging.Value) { Debug.Log("LPS RNG: " + rand + " to " + lightPrimerStrikeFailureRate.Value * generalMult.Value); }
+			//			if (enableConsoleDebugging.Value) { Debug.Log("LPS RNG: " + rand + " to " + LPSFailureRate.Value * generalMult.Value); }
 			if (rand >= chance)
 			{
 				if (__instance.IsFull && ___m_round != null && !__instance.IsSpent)
@@ -175,7 +177,7 @@ namespace Meatyceiver2
 			string failureName = "LPS";
 			if (!enableAmmunitionFailures.Value) { return true; }
 			float rand = (float)randomVar.Next(0, 10001) / 100;
-			float chance = lightPrimerStrikeFailureRate.Value * generalMult.Value;
+			float chance = LPSFailureRate.Value * generalMult.Value;
 			consoleDebugging(0, failureName, rand, chance);
 			if (rand <= chance)
 			{
@@ -194,7 +196,7 @@ namespace Meatyceiver2
 			string failureName = "LPS";
 			if (!enableAmmunitionFailures.Value) { return true; }
 			float rand = (float)randomVar.Next(0, 10001) / 100;
-			float chance = lightPrimerStrikeFailureRate.Value * generalMult.Value;
+			float chance = LPSFailureRate.Value * generalMult.Value;
 			consoleDebugging(0, failureName, rand, chance);
 			if (rand <= chance)
 			{
@@ -228,7 +230,7 @@ namespace Meatyceiver2
 					}
 				}
 			}
-			float chance = hammerFollowRate.Value * generalMult.Value + failureinc;
+			float chance = HFRate.Value * generalMult.Value + failureinc;
 			consoleDebugging(0, failureName, rand, chance);
 			if (rand <= chance)
 			{
@@ -601,7 +603,7 @@ namespace Meatyceiver2
 			if (!enableBrokenFirearmFailures.Value) { return true; }
 			string failureName = "Hammer follow";
 			float rand = (float)randomVar.Next(0, 10001) / 100;
-			float chance = hammerFollowRate.Value * generalMult.Value;
+			float chance = HFRate.Value * generalMult.Value;
 			consoleDebugging(0, failureName, rand, chance);
 			if (rand <= chance)
 			{
@@ -618,7 +620,7 @@ namespace Meatyceiver2
 			if (!enableBrokenFirearmFailures.Value) { return true; }
 			string failureName = "Hammer follow";
 			float rand = (float)randomVar.Next(0, 10001) / 100;
-			float chance = hammerFollowRate.Value * generalMult.Value;
+			float chance = HFRate.Value * generalMult.Value;
 			consoleDebugging(0, failureName, rand, chance);
 			if (rand <= chance && !isManual)
 			{
@@ -635,7 +637,7 @@ namespace Meatyceiver2
 			if (!enableBrokenFirearmFailures.Value) return true;
 			string failureName = "Failure to lock slide";
 			float rand = (float)randomVar.Next(0, 10001) / 100;
-			float chance = failureToLockSlide.Value * generalMult.Value;
+			float chance = FTLSlide.Value * generalMult.Value;
 			consoleDebugging(0, failureName, rand, chance);
 			if (rand <= chance)
 			{
