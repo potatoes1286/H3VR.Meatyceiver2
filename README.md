@@ -1,7 +1,7 @@
 # H3VR.Meatyceiver2
 H3VR mod to add jamming into the game!
 
-Current released version: 0.2.3
+Current released version: 0.3.2
 
 # How To Install
 
@@ -68,6 +68,7 @@ Same with Ammunition Failures, this enables all Broken Firearm Failures, being
 
 1. Hammer Follow
 1. Slam Fire
+1. Failure To Lock Slide
 
 ### Enable Secondary Failure Multipliers
 
