@@ -8,7 +8,7 @@ using BepInEx.Configuration;
 
 namespace Meatyceiver2
 {
-	[BepInPlugin("dll.potatoes.meatyceiver2", "Meatyceiver2", "0.2.12")]
+	[BepInPlugin("dll.potatoes.meatyceiver2", "Meatyceiver2", "0.3.3")]
 	public class Meatyceiver : BaseUnityPlugin
 	{
 		private ResourceManager stringManager = new ResourceManager(typeof(Resources));
