@@ -5,7 +5,7 @@ Current released version: 0.3.2
 
 # How To Install
 
-Download the release version from [BoneTome](https://bonetome.com/h3vr/weapons/171/) and drop it in H3VR/BepInEx/plugins.
+Download the release version from [Thunderstore](https://h3vr.thunderstore.io/package/Potatoes/Meatyceiver_2/) and drop it in H3VR/BepInEx/plugins.
 
 # Dependencies
 
