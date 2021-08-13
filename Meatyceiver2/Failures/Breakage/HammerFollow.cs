@@ -10,7 +10,7 @@ namespace Meatyceiver2.Failures.Breakage
 		{
 			if (!Meatyceiver.enableBrokenFirearmFailures.Value) return true;
 			float chance = Meatyceiver.HFRate.Value * Meatyceiver.generalMult.Value;
-			if (Meatyceiver.calcFail(chance))
+			if (Meatyceiver.CalcFail(chance))
 				return false;
 			return true;
 		}
@@ -21,7 +21,7 @@ namespace Meatyceiver2.Failures.Breakage
 		{
 			if (!Meatyceiver.enableBrokenFirearmFailures.Value) return true;
 			float chance = Meatyceiver.HFRate.Value * Meatyceiver.generalMult.Value;
-			if (Meatyceiver.calcFail(chance))
+			if (Meatyceiver.CalcFail(chance))
 				return false;
 			return true;
 		}

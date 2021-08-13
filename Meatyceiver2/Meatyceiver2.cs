@@ -78,6 +78,7 @@ namespace Meatyceiver2
 		{
 			Logger.LogInfo("Meatyceiver2 started!");
 			InitFields();
+			InitPatches();
 			randomVar = new System.Random();
 		}
 
@@ -134,7 +135,7 @@ namespace Meatyceiver2
 			Harmony.CreateAndPatchAll(typeof(Meatyceiver));
 		}
 		
-		public static bool calcFail(float chance)
+		public static bool CalcFail(float chance)
 		{
 			//effectively returns a number between 0 and 100 with 2 decimal points
 			float rand = (float)randomVar.Next(0, 10001) / 100;

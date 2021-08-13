@@ -11,7 +11,7 @@ namespace Meatyceiver2.Failures.Breakage
 			if (!Meatyceiver.enableBrokenFirearmFailures.Value) return true;
 			string failureName = "Failure to lock slide";
 			float chance = Meatyceiver.FTLSlide.Value * Meatyceiver.generalMult.Value;
-			if (Meatyceiver.calcFail(chance))
+			if (Meatyceiver.CalcFail(chance))
 				return false;
 			return true;
 		}

@@ -11,7 +11,7 @@ namespace Meatyceiver2.Failures.Ammo
 		{
 			if (!isAmmoFailEnabled) return true;
 			//if it fails, don't run the routine that fires it
-			if (Meatyceiver.calcFail(Meatyceiver.LPSFailureRate.Value * Meatyceiver.generalMult.Value))
+			if (Meatyceiver.CalcFail(Meatyceiver.LPSFailureRate.Value * Meatyceiver.generalMult.Value))
 				return false;
 			return true;
 		}

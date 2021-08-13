@@ -11,7 +11,7 @@ namespace Meatyceiver2.Failures.Breakage
 			if (Meatyceiver.enableBrokenFirearmFailures.Value)
 			{
 				float chance = Meatyceiver.slamfireRate.Value * Meatyceiver.generalMult.Value;
-				if (Meatyceiver.calcFail(chance)) {
+				if (Meatyceiver.CalcFail(chance)) {
 					__instance.Handgun.DropHammer(false);
 				}
 			}
@@ -24,7 +24,7 @@ namespace Meatyceiver2.Failures.Breakage
 			{
 				string failureName = "Slam fire";
 				float chance = Meatyceiver.slamfireRate.Value * Meatyceiver.generalMult.Value;
-				if (Meatyceiver.calcFail(chance))
+				if (Meatyceiver.CalcFail(chance))
 				{
 					__instance.Weapon.DropHammer();
 				}
