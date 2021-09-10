@@ -139,7 +139,8 @@ namespace Meatyceiver2
 		{
 			//effectively returns a number between 0 and 100 with 2 decimal points
 			float rand = (float)randomVar.Next(0, 10001) / 100;
-			if (chance <= rand) return true;
+			if(enableConsoleDebugging.Value) Debug.Log("Chance: " + chance + " Rand: " + rand);
+			if (rand <= chance) return true;
 			return false;
 		}
 		
