@@ -1,4 +1,5 @@
 ﻿using System.Resources;
+using System.Threading;
 using HarmonyLib;
 using FistVR;
 using UnityEngine;
@@ -9,6 +10,7 @@ using Meatyceiver2.Failures;
 using Meatyceiver2.Failures.Ammo;
 using Meatyceiver2.Failures.Breakage;
 using Meatyceiver2.Failures.Firearm;
+using Meatyceiver2.Failures.Monitoring;
 
 namespace Meatyceiver2
 {
@@ -26,6 +28,7 @@ namespace Meatyceiver2
 		//Multipliers
 
 		public static ConfigEntry<float> generalMult;
+		public static ConfigEntry<float> NatReliabilityModifier;
 
 		//Secondary Failure - Mag Unreliability
 
@@ -90,7 +93,7 @@ namespace Meatyceiver2
 			enableConsoleDebugging = Config.Bind(Strings.GeneralSettings,Strings.EnableConsoleDebugging_key, false, Strings.EnableConsoleDebugging_description);
 
 			generalMult = Config.Bind(Strings.GeneralMultipliers_section, Strings.GeneralMultipliers_key, 1f, Strings.GeneralMultipliers_description);
-
+			NatReliabilityModifier = Config.Bind(Strings.GeneralMultipliers_section, "Natural Reliability Modifier", 0.15f, "Maximum percent increase in unreliability by luck.");
 
 			enableMagUnreliability = Config.Bind(Strings.MagUnreliability_section, Strings.MagReliability_key, true, Strings.MagReliability_description);
 			failureIncPerRound = Config.Bind(Strings.MagUnreliability_section, Strings.MagReliabilityMult_key, 0.04f, Strings.MagReliabilityMult_description);
@@ -133,14 +136,22 @@ namespace Meatyceiver2
 			//other
 			Harmony.CreateAndPatchAll(typeof(OtherFailures));
 			Harmony.CreateAndPatchAll(typeof(Meatyceiver));
+			//monitor
+			Harmony.CreateAndPatchAll(typeof(Monitor_Firearm));
+			Harmony.CreateAndPatchAll(typeof(Monitor_Magazine));
 		}
 		
-		public static bool CalcFail(float chance)
+		public static bool CalcFail(float chance, FVRPhysicalObject obj)
 		{
 			//effectively returns a number between 0 and 100 with 2 decimal points
 			float rand = (float)randomVar.Next(0, 10001) / 100;
-			if(enableConsoleDebugging.Value) Debug.Log("Chance: " + chance + " Rand: " + rand);
-			if (rand <= chance) return true;
+			float mult = 1;
+			if (obj != null)
+			{
+				mult += MCM.GetMultForRoundsUsed(obj);
+			}
+			if(enableConsoleDebugging.Value) Debug.Log("Base Chance: " + chance + " Chance: " + (chance * mult) + " Rand: " + rand + " Mult: " + mult);
+			if (rand <= chance * mult) return true;
 			return false;
 		}
 		

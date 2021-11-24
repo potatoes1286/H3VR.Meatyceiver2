@@ -15,7 +15,11 @@ namespace Meatyceiver2.Failures.Firearm
 			if (__instance is BoltActionRifle || __instance is LeverActionFirearm) return false;
 			if (!Meatyceiver.enableFirearmFailures.Value) return true;
 			float chance = Meatyceiver.FTERate.Value * Meatyceiver.generalMult.Value;
-			if (Meatyceiver.CalcFail(chance))
+			FVRPhysicalObject obj = null;
+			if (__instance is ClosedBolt) obj = (__instance as ClosedBolt).Weapon;
+			if (__instance is HandgunSlide) obj = (__instance as HandgunSlide).Handgun;
+			if (__instance is OpenBoltReceiverBolt) obj = (__instance as OpenBoltReceiverBolt).Receiver;
+			if (Meatyceiver.CalcFail(chance, obj))
 			{
 				__instance.RotationInterpSpeed = 2;
 				return false;
@@ -45,7 +49,7 @@ namespace Meatyceiver2.Failures.Firearm
 			float chance = Meatyceiver.breakActionFTE.Value
 			               * (Meatyceiver.generalMult.Value - 1)
 			               *  Meatyceiver.breakActionFTEMultAffect.Value;
-			if(Meatyceiver.CalcFail(chance)) {
+			if(Meatyceiver.CalcFail(chance, __instance)) {
 				chamber.RotationInterpSpeed = 2;
 				return false;
 			}
@@ -62,7 +66,7 @@ namespace Meatyceiver2.Failures.Firearm
 				{
 					string failureName = "Revolver FTE";
 					float chance = Meatyceiver.revolverFTE.Value * (Meatyceiver.generalMult.Value - 1) * Meatyceiver.revolverFTEGenMultAffect.Value;
-					if (Meatyceiver.CalcFail(chance))
+					if (Meatyceiver.CalcFail(chance, __instance.Firearm))
 					{
 						__instance.RotationInterpSpeed = 2;
 						return false;
@@ -93,7 +97,7 @@ namespace Meatyceiver2.Failures.Firearm
 			{
 				string failureName = "Rolling block FTE";
 				float chance = Meatyceiver.breakActionFTE.Value * (Meatyceiver.generalMult.Value - 1) * Meatyceiver.breakActionFTEMultAffect.Value;
-				if (Meatyceiver.CalcFail(chance))
+				if (Meatyceiver.CalcFail(chance, __instance.Firearm))
 					return false;
 			}
 			return true;

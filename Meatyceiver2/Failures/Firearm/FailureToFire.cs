@@ -38,7 +38,7 @@ namespace Meatyceiver2.Failures.Firearm
 			               * Meatyceiver.generalMult.Value
 			               + failureinc;
 			//throw that meat pile n calc
-			if (Meatyceiver.CalcFail(chance))
+			if (Meatyceiver.CalcFail(chance, __instance))
 				return false;
 			return true;
 		}

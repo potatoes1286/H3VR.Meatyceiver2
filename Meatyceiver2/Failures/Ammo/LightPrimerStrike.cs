@@ -7,11 +7,11 @@ namespace Meatyceiver2.Failures.Ammo
 	{
 		public static bool isAmmoFailEnabled => Meatyceiver.enableAmmunitionFailures.Value;
 
-		public static bool CalcLightPrimerStrikeFail()
+		public static bool CalcLightPrimerStrikeFail(FVRPhysicalObject obj)
 		{
 			if (!isAmmoFailEnabled) return true;
 			//if it fails, don't run the routine that fires it
-			if (Meatyceiver.CalcFail(Meatyceiver.LPSFailureRate.Value * Meatyceiver.generalMult.Value))
+			if (Meatyceiver.CalcFail(Meatyceiver.LPSFailureRate.Value * Meatyceiver.generalMult.Value, obj))
 				return false;
 			return true;
 		}
@@ -21,7 +21,7 @@ namespace Meatyceiver2.Failures.Ammo
 		static bool DefaultPatch_LightPrimerStrike(ref bool __result, FVRFireArmChamber __instance, FVRFireArmRound ___m_round)
 		{
 			if (__instance.Firearm is Revolver || __instance.Firearm is RevolvingShotgun) return true;
-			if (CalcLightPrimerStrikeFail())
+			if (CalcLightPrimerStrikeFail(__instance.Firearm))
 			{
 				return true;
 			}
@@ -32,7 +32,7 @@ namespace Meatyceiver2.Failures.Ammo
 		[HarmonyPatch(typeof(Revolver), "Fire")] [HarmonyPrefix]
 		static bool RevolverPatch_LightPrimerStrike(Revolver __instance)
 		{
-			if (CalcLightPrimerStrikeFail())
+			if (CalcLightPrimerStrikeFail(__instance))
 				return true;
 			return false;
 		}
@@ -40,7 +40,7 @@ namespace Meatyceiver2.Failures.Ammo
 		[HarmonyPatch(typeof(RevolvingShotgun), "Fire")] [HarmonyPrefix]
 		static bool RevolvingShotgunPatch_LightPrimerStrike(RevolvingShotgun __instance)
 		{
-			if (CalcLightPrimerStrikeFail())
+			if (CalcLightPrimerStrikeFail(__instance))
 				return true;
 			return false;
 		}
