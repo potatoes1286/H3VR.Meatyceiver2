@@ -36,21 +36,18 @@ namespace Meatyceiver2.Failures.Firearm
 		}
 		
 		[HarmonyPatch(typeof(FVRFireArmChamber), "BeginInteraction")] [HarmonyPostfix]
-		static void GeneralFixPatch_FailureToExtract(FVRFireArmChamber __instance)
-		{
-			__instance.RotationInterpSpeed = 1;
-		}
+		static void GeneralFixPatch_FailureToExtract(FVRFireArmChamber __instance) { MCM.RemoveFlag(__instance, states.StuckRound); }
 		
 		[HarmonyPatch(typeof(BreakActionWeapon), "PopOutRound")] [HarmonyPrefix]
 		static bool BreakActionPatch_FailureToExtract(BreakActionWeapon __instance, FVRFireArm chamber)
 		{
 			if (!Meatyceiver.enableFirearmFailures.Value) return true;
-			if (chamber.RotationInterpSpeed == 2) return false;
+			if (MCM.HasFlag(chamber, states.StuckRound)) return false;
 			float chance = Meatyceiver.breakActionFTE.Value
 			               * (Meatyceiver.generalMult.Value - 1)
 			               *  Meatyceiver.breakActionFTEMultAffect.Value;
 			if(Meatyceiver.CalcFail(chance, __instance)) {
-				chamber.RotationInterpSpeed = 2;
+				MCM.AddFlag(chamber, states.StuckRound);
 				return false;
 			}
 			return true;

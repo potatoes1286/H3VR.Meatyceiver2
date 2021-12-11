@@ -10,7 +10,7 @@ namespace Meatyceiver2.Failures.Monitoring
 		[HarmonyPrefix]
 		static bool GeneralPatch_FailureToExtract(FVRFireArmChamber __instance)
 		{
-			MCM.IncRoundsUsed(__instance.Firearm);
+			if(__instance.Firearm != null) MCM.IncRoundsUsed(__instance.Firearm);
 			return true;
 		}
 	}

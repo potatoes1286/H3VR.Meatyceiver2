@@ -147,9 +147,7 @@ namespace Meatyceiver2
 			float rand = (float)randomVar.Next(0, 10001) / 100;
 			float mult = 1;
 			if (obj != null)
-			{
 				mult += MCM.GetMultForRoundsUsed(obj);
-			}
 			if(enableConsoleDebugging.Value) Debug.Log("Base Chance: " + chance + " Chance: " + (chance * mult) + " Rand: " + rand + " Mult: " + mult);
 			if (rand <= chance * mult) return true;
 			return false;

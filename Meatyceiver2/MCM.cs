@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Alloy;
 using FistVR;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -8,16 +9,19 @@ namespace Meatyceiver2
 {
 	public class MCM : MonoBehaviour
 	{
-		public static Dictionary<FVRPhysicalObject, ObjectExtention> objExt;
+		public static Dictionary<FVRInteractiveObject, ObjectExtention> objExt;
 		
-		public static void IncRoundsUsed(FVRPhysicalObject obj)
-		{
+		public static void IncRoundsUsed(FVRInteractiveObject obj) {
 			CreateKey(obj);
 			objExt[obj].roundsUsed++;
 		}
+		public static void AddFlag(FVRInteractiveObject obj, states state) { CreateKey(obj); objExt[obj].state |= state; }
+		public static void RemoveFlag(FVRInteractiveObject obj, states state) { CreateKey(obj); objExt[obj].state &= ~state; }
+		public static bool HasFlag(FVRInteractiveObject obj, states state) { CreateKey(obj); return objExt[obj].state.HasFlag(state); }
+		public static float GetParabola(float a, float b, float c, float x) { return a*x*x + b*x + c; }
 		
 		//Returns whether it already existed or not.
-		public static bool CreateKey(FVRPhysicalObject obj)
+		public static bool CreateKey(FVRInteractiveObject obj)
 		{
 			if (objExt.ContainsKey(obj)) return true;
 			objExt.Add(obj, new ObjectExtention());
@@ -27,13 +31,12 @@ namespace Meatyceiver2
 
 		public static float GenerateNatReliability(float bias = 0)
 		{
-			float random = Random.Range(0f, 1f);
-			//0.15x^2+1
-			float mult = Meatyceiver.NatReliabilityModifier.Value * (Mathf.Pow(random, 2)) + 1;
+			float random = Random.Range(-1f, 1f) + bias; //bias can make it go over 1 or -1. careful!
+			float mult = 1 + Meatyceiver.NatReliabilityModifier.Value * 0.15f * Mathf.Pow(random, 3); //0.15x^3
 			return mult;
 		}
 
-		public static float GetMultForRoundsUsed(FVRPhysicalObject obj)
+		public static float GetMultForRoundsUsed(FVRInteractiveObject obj)
 		{
 			CreateKey(obj);
 			float mult = 1;
@@ -54,5 +57,14 @@ namespace Meatyceiver2
 	{
 		public float naturalReliability; //lower = more reliable; normal is 1
 		public int roundsUsed;
+		public states state;
+	}
+	
+	[Flags]
+	public enum states
+	{
+		RunawayGun,
+		StuckRound,
+		BrokenHammer
 	}
 }
