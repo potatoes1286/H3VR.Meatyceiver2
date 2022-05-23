@@ -96,7 +96,7 @@
     <Compile Include="Failures\Breakage\HammerFollow.cs" />
     <Compile Include="Failures\Breakage\Slamfire.cs" />
     <Compile Include="Failures\Firearm\FailureToExtract.cs" />
-    <Compile Include="Failures\Firearm\FailureToFire.cs" />
+    <Compile Include="Failures\Firearm\FailureToFeed.cs" />
     <Compile Include="Failures\Monitoring\Monitor_Firearm.cs" />
     <Compile Include="Failures\Monitoring\Monitor_Magazine.cs" />
     <Compile Include="Failures\OtherFailures.cs" />

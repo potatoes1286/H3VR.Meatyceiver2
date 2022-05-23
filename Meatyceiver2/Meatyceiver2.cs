@@ -146,10 +146,13 @@ namespace Meatyceiver2
 			//effectively returns a number between 0 and 100 with 2 decimal points
 			float rand = (float)randomVar.Next(0, 10001) / 100;
 			float mult = 1;
-			if (obj != null)
-				mult += MCM.GetMultForRoundsUsed(obj);
+			if (obj != null) {
+				mult *= MCM.GetMultForRoundsUsed(obj);
+				mult *= MCM.objExt[obj].naturalReliability;
+			}
+				
 			if(enableConsoleDebugging.Value) Debug.Log("Base Chance: " + chance + " Chance: " + (chance * mult) + " Rand: " + rand + " Mult: " + mult);
-			if (rand <= chance * mult) return true;
+			if (rand * mult <= chance) return true;
 			return false;
 		}
 		

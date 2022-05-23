@@ -39,13 +39,12 @@ namespace Meatyceiver2
 		public static float GetMultForRoundsUsed(FVRInteractiveObject obj)
 		{
 			CreateKey(obj);
-			float mult = 1;
+			float mult = 0;
 			var r = objExt[obj].roundsUsed;
 			if (obj is FVRFireArm)
 			{
 				//TODO: MAKE THIS OPTIONS!!!!
-				mult += (0.0001f * (r - 400f));
-				mult = Mathf.Clamp(mult, 1f, 1.1f);
+				mult = 1 + Mathf.Min((0.0001f * (r - 400f)), 0.1f);
 			}
 
 			return mult;
