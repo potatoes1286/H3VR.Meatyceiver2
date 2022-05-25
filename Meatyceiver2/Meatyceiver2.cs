@@ -56,12 +56,24 @@ namespace Meatyceiver2
 		private IEnumerator LoadScript(FileInfo file)
 		{
 			var script = String.Empty;
+			
+			// read all file data
 			using (var reader = new StreamReader(file.OpenRead()))
-			{
 				while (!reader.EndOfStream)
 					yield return script += reader.ReadLine();
-			}
-			_scripts.Add(new ConfigScript(_lua, script));
+			
+			// get mod name
+			string modName = String.Empty;
+			DirectoryInfo dir = file.Directory;
+			//keep climbing up the directory chain until the parent is the Plugins folder
+			while (true)
+				if (dir.Parent.Name != "Plugins") //Reasonably, this should never be null. If it is, we fucked up HARD.
+					dir = dir.Parent;
+				else
+					modName = dir.Name;
+
+
+			_scripts.Add(new ConfigScript(_lua, script, modName));
 		}
 	}
 }
