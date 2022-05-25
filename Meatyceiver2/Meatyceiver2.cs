@@ -49,7 +49,7 @@ namespace Meatyceiver2
 		private IEnumerator LoadScripts(DirectoryInfo dir)
 		{
 			yield return (from file in		dir.GetFiles() 
-									where	file.Extension == "lua" 
+									where	file.Name.EndsWith("_meatyceiver_config.lua")
 									select	StartCoroutine(LoadScript(file))).GetEnumerator();
 		}
 
