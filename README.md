@@ -14,8 +14,11 @@ So, I have archived this repository and started from scratch. This will be versi
 
 This is in development; it is not working yet.
 
-If you are looking for a working version, check out the 0.3.x branch on the redux repo. https://github.com/potatoes1286/Meatyceiver2-Redux/tree/0.3.x
+If you are looking for a working version, check out the 0.3.x branch on the redux repo.
 ```
+
+## [0.3.x branch on the redux repo](https://github.com/potatoes1286/Meatyceiver2-Redux/tree/0.3.x)
+
 
 # How To Install
 
