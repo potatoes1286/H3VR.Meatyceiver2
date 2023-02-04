@@ -1,7 +1,21 @@
 # H3VR.Meatyceiver2
 H3VR mod to add jamming into the game!
 
-Current released version: 0.3.2
+Current released version: 0.3.3
+
+## This repository is ARCHIVED.
+
+```
+As some of you may know, Meatyceiver 2 was an extremely poorly coded mod.
+
+At this point, while I wish to continue it, the codebase is untenable.
+
+So, I have archived this repository and started from scratch. This will be versions 0.4.0 and above.
+
+This is in development; it is not working yet.
+
+If you are looking for a working version, check out the 0.3.x branch on the redux repo. https://github.com/potatoes1286/Meatyceiver2-Redux/tree/0.3.x
+```
 
 # How To Install
 
